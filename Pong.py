@@ -1,4 +1,5 @@
 import turtle
+import random
 from playsound import playsound
 
 # Draw screen
@@ -31,13 +32,15 @@ paddle_2.goto(350, 0)
 
 # Draw ball
 ball = turtle.Turtle()
-ball.speed(1)
+ball.speed(0)
 ball.shape("square")
 ball.color("white")
 ball.penup()
 ball.goto(0, 0)
 ball.dx = 1
 ball.dy = 1
+middle = 0
+
 
 # Score
 score_1 = 0
@@ -58,28 +61,24 @@ hud.write("0 : 0", align="center", font=("Press Start 2P", 24, "normal"))
 def paddle_1_up():
     y = paddle_1.ycor()
     if y < 250:
-        paddle_1.fd(30)
+        paddle_1.fd(25)
     else:
         paddle_1.sety(250)
-    if (paddle_1.ycor() + 50 == ball.ycor()) and (paddle_1.xcor() == ball.xcor()):
-        ball.dx *= -1
 
 
 def paddle_1_down():
     y = paddle_1.ycor()
     if y > -250:
-        paddle_1.back(30)
+        paddle_1.back(25)
     else:
         paddle_1.sety(-250)
-    if paddle_1.ycor() - 50 == ball.ycor() and (paddle_1.xcor() == ball.xcor()):
-        ball.dx *= -1
 
 
 # Paddle movement set
 def paddle_2_up():
     y = paddle_2.ycor()
     if y < 250:
-        y += 30
+        y += 25
     else:
         y = 250
     paddle_2.sety(y)
@@ -88,7 +87,7 @@ def paddle_2_up():
 def paddle_2_down():
     y = paddle_2.ycor()
     if y > -250:
-        y += -30
+        y += -25
     else:
         y = -250
     paddle_2.sety(y)
@@ -137,15 +136,49 @@ while True:
     # Point sound and restart ball
     if flag:
         playsound("C:\\Users\\amosf\\Downloads\\pong_258020__kodack__arcade-bleep-sound.wav")
-        ball.goto(0, 0)
+        ball.goto(0, random.choice(range(-280, 260)))
+        ball.dy = (random.choice(range(-1, 1)))
+        if ball.dy == 0:
+            middle = 1
         ball.dx *= -1
 
-    # Collision with the paddle 1
-    if(ball.xcor() == -330) and (paddle_1.ycor() + 50 > ball.ycor() > paddle_1.ycor() - 50):
+    # Collision with one of the paddles
+    if((ball.xcor() == -330) and (paddle_1.ycor() + 60 > ball.ycor() > paddle_1.ycor() - 60)) or (
+            (ball.xcor() == 330) and (paddle_2.ycor() + 60 > ball.ycor() > paddle_2.ycor() - 60)):
         ball.dx *= -1
         playsound("C:\\Users\\amosf\\Downloads\\pong_bounce.wav")
 
-    # collision with the paddle 2
-    elif (ball.xcor() == 330) and (paddle_2.ycor() + 50 > ball.ycor() > paddle_2.ycor() - 50):
-        ball.dx *= -1
-        playsound("C:\\Users\\amosf\\Downloads\\pong_bounce.wav")
+    # Collisions with the paddle 1
+    if(ball.xcor() == -330) and (paddle_1.ycor() + 60 > ball.ycor() > paddle_1.ycor() + 35):
+        if middle:
+            ball.dx = 1
+            ball.dy = 1
+            middle = 0
+
+    # If ball hit the down border
+    elif(ball.xcor() == -330) and (paddle_1.ycor() - 35 > ball.ycor() > paddle_1.ycor() - 60):
+        if middle:
+            ball.dx = 1
+            ball.dy = -1
+            middle = 0
+
+    # If ball hit the middle
+    elif(ball.xcor() == -330) and (paddle_1.ycor() + 10 > ball.ycor() > paddle_1.ycor() - 10):
+        # ball.dx *= -1
+        ball.dy = 0
+        middle = 1
+
+    # Collision with the paddle 2
+    if(ball.xcor() == 330) and (paddle_2.ycor() + 60 > ball.ycor() > paddle_2.ycor() + 35):
+        if middle:
+            ball.dx = -1
+            ball.dy = 1
+            middle = 0
+    elif (ball.xcor() == 330) and (paddle_2.ycor() - 35 > ball.ycor() > paddle_2.ycor() - 60):
+        if middle:
+            ball.dx = -1
+            ball.dy = -1
+            middle = 0
+    elif(ball.xcor() == 330) and (paddle_2.ycor() + 10 > ball.ycor() > paddle_2.ycor() - 10):
+        ball.dy = 0
+        middle = 1
